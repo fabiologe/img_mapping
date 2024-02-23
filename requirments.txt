@@ -1,0 +1,3 @@
+# Note: Install Rust compiler
+leafmap == 0.31.3
+#pandas == 
