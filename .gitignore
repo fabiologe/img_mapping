@@ -1,0 +1,14 @@
+# Ignore virtual environment
+back/venv/
+
+# Ignore any compiled Python files
+*.pyc
+
+# Ignore environment-specific files
+.env
+
+# Ignore any log files
+*.log
+
+# Ignore system-specific files
+.DS_Store
