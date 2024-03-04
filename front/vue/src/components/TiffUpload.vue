@@ -8,7 +8,10 @@
 
     <!-- Progress bar -->
     <div class="progress-container" v-if="selectedFileName">
-      <div class="progress-bar" :style="{ width: uploadProgress + '%' }"></div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" :style="{ width: uploadProgress + '%' }"></div>
+      </div>
+      <div class="progress-text">{{ uploadProgress }}%</div>
     </div>
   </div>
 </template>
@@ -27,7 +30,8 @@ const handleFileUpload = async (event) => {
   try {
     const response = await fetch('http://localhost:5000/upload', {
       method: 'POST',
-      body: formData
+      body: formData,
+      // Optional: Add headers if needed
     });
 
     if (response.ok) {
@@ -67,27 +71,38 @@ const handleFileUpload = async (event) => {
   border-color: #2980b9;
 }
 
-/* File name display styles */
-.file-name {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #333;
-}
-
 /* Progress bar styles */
 .progress-container {
   width: 100%;
-  height: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
   margin-top: 10px;
 }
 
+.progress-bar-container {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+
 .progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   background-color: #3498db;
-  border-radius: 5px;
+  border-radius: 10px;
   transition: width 0.3s ease;
 }
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: #333;
+}
 </style>
+
 
