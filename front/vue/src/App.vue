@@ -2,6 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import TiffUpload from './components/TiffUpload.vue'
+import JpgUpload from './components/JpgUpload.vue'
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import TiffUpload from './components/TiffUpload.vue'
 
     <main>
       <TiffUpload />
+      <JpgUpload />
     </main>
   </div>
 </template>

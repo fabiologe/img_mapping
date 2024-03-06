@@ -1,18 +1,43 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 import os
+import shutil
 #from py.creating_map import mosaick_geotiffs
 
-upload_blueprint = Blueprint('upload', __name__)
+upload_tiff_blueprint = Blueprint('upload_tiff', __name__)
+upload_jpgs_blueprint = Blueprint('upload_jpgs', __name__)
 
 ALLOWED_EXTENSIONS = {'tif', 'tiff', 'geotiff'}
+ALLOWED_MARKERS = {'jpg'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-import shutil
 
-@upload_blueprint.route('/upload', methods=['POST'])
+def allowed_marker(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_MARKERS
+
+@upload_jpgs_blueprint.route('/upload_jpgs', methods=['POST'])
+def upload_jpgs():
+    if 'jpgs[]' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    jpg_files = request.files.getlist('jpgs[]')  # Get list of uploaded JPG files
+
+    if len(jpg_files) < 1:
+        return jsonify({'error': 'No files uploaded'})
+
+    for jpg_file in jpg_files:
+        if jpg_file.filename == '':
+            return jsonify({'error': 'No selected file'})
+        if jpg_file and allowed_marker(jpg_file.filename):
+            filename = secure_filename(jpg_file.filename)
+            file_path = os.path.join('jpgs', filename)
+            jpg_file.save(file_path)  # Save each uploaded JPG file to 'back/jpgs' directory
+
+    return jsonify({'message': 'JPG files uploaded successfully'})
+
+@upload_tiff_blueprint.route('/upload_tiff', methods=['POST'])
 def upload_tiff():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})

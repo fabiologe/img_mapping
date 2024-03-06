@@ -1,7 +1,9 @@
 <template>
   <div>
-    <label for="tiffFileInput" class="file-label">{{ selectedTiffFileName || 'Select GeoTIFF/TIFF ' }}</label>
-    <input id="tiffFileInput" type="file" accept=".tif" @change="handleTiffUpload" class="file-input">
+    <!-- For JPG files -->
+    <label for="jpgFileInput" class="file-label">{{ selectedJpgFileName || 'Select JPG Files' }}</label>
+    <input id="jpgFileInput" type="file" accept=".jpg" multiple @change="handleJpgUpload" class="file-input"> 
+
     <!-- Progress bar -->
     <div class="progress-container" v-if="selectedFileName">
       <div class="progress-bar-container">
@@ -18,15 +20,20 @@ import { ref } from 'vue';
 const uploadProgress = ref(0);
 const selectedFileName = ref('');
 
-const handleTiffUpload = async (event) => {
-  const selectedFile = event.target.files[0];
+const handleJpgUpload = async (event) => {
+  const files = event.target.files;
   const formData = new FormData();
-  formData.append('file', selectedFile);
+
   // Update selectedFileName to show progress bar
-  selectedFileName.value = selectedFile.name;
+  selectedFileName.value = `${files.length} file(s) selected`;
+
+  // Append all selected files to the FormData object
+  Array.from(files).forEach((file) => {
+    formData.append('jpg', file);
+  });
 
   try {
-    const response = await fetch('http://localhost:5000/upload_tiff', {
+    const response = await fetch('http://localhost:5000/upload_jpgs', {
       method: 'POST',
       body: formData,
       // Optional: Add headers if needed
@@ -34,7 +41,7 @@ const handleTiffUpload = async (event) => {
 
     if (response.ok) {
       // File upload successful
-      console.log('File uploaded successfully.');
+      console.log('Files uploaded successfully.');
       // Handle any further actions or UI updates
 
       // Start the progress animation
@@ -50,15 +57,14 @@ const handleTiffUpload = async (event) => {
       }, 500);
     } else {
       // Handle error
-      console.error('File upload failed.');
+      console.error('Files upload failed.');
       // Display error message or take appropriate action
     }
   } catch (error) {
-    console.error('An error occurred while uploading the file:', error);
+    console.error('An error occurred while uploading the files:', error);
     // Display error message or take appropriate action
   }
 };
-
 </script>
 
 <style scoped>
@@ -115,4 +121,3 @@ const handleTiffUpload = async (event) => {
   color: #333;
 }
 </style>
-
