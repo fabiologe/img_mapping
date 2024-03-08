@@ -5,8 +5,7 @@
     <!-- Progress bar -->
     <div class="progress-container" v-if="selectedFileName">
       <div class="progress-bar-container">
-        <div class="progress-bar" :style="{ width: uploadProgress + '%' }"></div>
-      </div>
+        <div class="progress-bar" :style="{ width: uploadProgress + '%', transitionDuration: '5s' }"></div>      </div>
       <div class="progress-text">{{ uploadProgress }}%</div>
     </div>
   </div>
@@ -103,7 +102,7 @@ const handleTiffUpload = async (event) => {
   height: 100%;
   background-color: #3498db;
   border-radius: 10px;
-  transition: width 0.3s ease; /* Set the default animation duration */
+  transition: width 5s ease; /* Set the default animation duration to 5 seconds */
 }
 
 .progress-text {
