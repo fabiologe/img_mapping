@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, Response, Blueprint
+from __future__ import print_function
+from flask import Flask, request, jsonify , Blueprint
 from werkzeug.utils import secure_filename
 import os
 import shutil
@@ -10,53 +11,61 @@ upload_jpgs_blueprint = Blueprint('upload_jpgs', __name__)
 upload_update_blueprint = Blueprint('update_progress', __name__)
 
 ALLOWED_EXTENSIONS = {'tif', 'tiff', 'geotiff'}
-ALLOWED_MARKERS = {'jpg'}
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
+ALLOWED_MARKERS = {'jpg'}
 
 
 def allowed_marker(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_MARKERS
 
-# Endpoint to serve progress updates to the client
-@upload_update_blueprint.route('/upload_progress')
-def upload_progress():
-    return Response(generate_progress(), content_type='text/event-stream')
 
-
-def generate_progress(files):
-    total_files = len(files)
-    uploaded_count = 0
-
-    for jpg_file in files:
-        if jpg_file.filename == '':
-            return jsonify({'error': 'No selected file'})
-
-        if jpg_file and allowed_marker(jpg_file.filename):
-            filename = secure_filename(jpg_file.filename)
-            file_path = os.path.join('jpgs', filename)
-            
-            try:
-                with open(file_path, 'wb') as f:
-                    f.write(jpg_file.stream.read())
-            except Exception as e:
-                # Log the error
-                logging.error(f"Error saving file '{filename}': {e}")
-                continue  # Continue with the next file
-            
-            uploaded_count += 1
-            
-            # Calculate progress percentage
-            progress = int((uploaded_count / total_files) * 100)
-            
-            # Send real-time progress update to the client
-            yield f"data: {progress}\n\n"
-
-@upload_jpgs_blueprint.route('/upload_jpgs', methods=['POST'])
+@upload_jpgs_blueprint.route('/upload_jpgs', methods=['GET', 'POST'])
 def upload_jpgs():
-    files = request.files.getlist('jpg')
-    return Response(generate_progress(files), content_type='text/event-stream')
+    response_object = {'status': 'success'}
+
+    if request.method == "POST":
+        try:
+            # Get JSON data from request body
+            post_data = request.get_json()
+
+            # Print filenames to the terminal
+            print("Received filenames:", post_data.get('filenames', []))
+
+            # Validate filenames (assuming multiple filenames are sent)
+            filenames = post_data.get('filenames', [])
+            for filename in filenames:
+                if not allowed_marker(filename):
+                    print('!!! Invalide File!!!')
+                    response_object['status'] = 'error'
+                    response_object['message'] = f'Invalid file extension for "{filename}"'
+                    return jsonify(response_object)
+
+            # Append filenames to the list (assuming FILENAMES is defined globally)
+            FILENAMES.extend(filenames)  # Use extend to add multiple filenames
+
+            # Update response object with success message
+            response_object['message'] = f'{len(filenames)} jpg(s) added!'
+
+        except Exception as e:
+            response_object['status'] = 'error'
+            response_object['message'] = str(e)
+
+    else:  # GET request
+        response_object['files'] = FILENAMES
+
+    return jsonify(response_object)
+
+
+
+FILENAMES = [
+    {'filename' : "346664532445446564524.jpg"},
+    {'filename': "dfegjefeelfef.jpg"},
+    {'filename': "fhufhwfhwef.jpg"}
+]
 
 
 
@@ -69,9 +78,7 @@ def upload_jpgs():
 
 
 
-
-
-@upload_tiff_blueprint.route('/upload_tiff', methods=['POST'])
+@upload_tiff_blueprint.route('/upload_tiff', methods=['GET', 'POST'])
 def upload_tiff():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})

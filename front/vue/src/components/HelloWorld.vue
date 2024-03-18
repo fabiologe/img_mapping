@@ -1,44 +1,57 @@
-<script setup>
-defineProps({
-  msg: {
-    type: String,
-    required: true
+<script>
+import axios from 'axios'
+export default {
+  data() {
+    return {
+      uploading: false,
+      progress: 0,
+      eventSource: null
+      
+    };
+  },
+  methods: {
+    uploadFiles(event) {
+      this.uploading = true;
+      const files = event.target.files;
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('jpg', files[i]); // Append all files with the same key 'jpg'
+        console.log(`${files[i].name} uploaded`);
+      }
+
+      // Reset the file input value to clear the selection
+      event.target.value = '';
+
+      fetch('http://localhost:5000/upload_jpgs', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          this.setupEventSource();
+        } else {
+          throw new Error('Failed to upload files');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        this.uploading = false;
+      });
+    },
+    setupEventSource() {
+      this.eventSource = new EventSource('http://localhost:5000/upload_progress');
+      this.eventSource.onmessage = (event) => {
+        this.progress = parseInt(event.data);
+        if (this.progress === 100) {
+          this.uploading = false;
+          this.eventSource.close();
+        }
+      };
+      this.eventSource.onerror = () => {
+        this.eventSource.close();
+        this.uploading = false;
+      };
+    }
   }
-})
+};
 </script>
-
-<template>
-  <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
-    </h3>
-  </div>
-</template>
-
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
-  }
-}
-</style>

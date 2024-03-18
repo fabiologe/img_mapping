@@ -1,67 +1,96 @@
 <template>
-  <div>
-    <input type="file" multiple @change="uploadFiles">
-    <div v-if="uploading">
-      <progress :value="progress" max="100"></progress>
+  <div class="jumbotron vertical-center">
+    <div class="container">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sandstone/bootstrap.min.css" integrity="sha384-zEpdAL7W11eTKeoBJK1g79kgl9qjP7g84KfK3AZsuonx38n8ad+f5ZgXtoSDxPOh" crossorigin="anonymous">
+      <div class="col-sm-5">
+        <p> Upload jpg's  </p>
+        <input type="file" multiple @change="getFilenames">
+        <br><br>
+        <button type="button" class="btn btn-success btn-sm" @click="submitFiles">Submit</button>
+        <p v-if="showWarning" :errorMessage="errorMessage" @close="showWarning = false" class="warning-message">⚠️ wrong file selected ⚠️</p>
+        <button type="button" @click="confirmReload" v-if="showWarning">Reload</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
+const path = 'http://localhost:5000/upload_jpgs'
+const allowedExtensions = ['jpg']; // Allowed file extensions (adjust as needed)
+
 export default {
   data() {
     return {
-      uploading: false,
-      progress: 0,
-      eventSource: null
-    };
+      showWarning: false,
+      errorMessage: '',
+      filenames: [],
+    }
   },
   methods: {
-    uploadFiles(event) {
-      this.uploading = true;
+    getFilenames(event) {
       const files = event.target.files;
-      const formData = new FormData();
+      this.filenames = [];
+
+      let hasInvalidFiles = false; // Flag to track invalid files
       for (let i = 0; i < files.length; i++) {
-        formData.append('jpg', files[i]); // Append all files with the same key 'jpg'
-        console.log(`${files[i].name} uploaded`);
+        const file = files[i];
+        const extension = file.name.split('.').pop().toLowerCase();
+      
+        if (!allowedExtensions.includes(extension)) {
+          hasInvalidFiles = true;
+        } else {
+          this.filenames.push(file.name);
+        }
+      }
+    
+      if (hasInvalidFiles) {
+        this.showWarning = true; // Set showWarning only if there are invalid files
+        this.errorMessage = `Invalid file extension detected!`
+        console.log('showWarning:', this.showWarning);
+      }
+},confirmReload() {
+    if (confirm("Invalid files selected. Reload page to clear selection?")) {
+      window.location.reload();
+    }
+  },
+    async submitFiles() {
+      if (!this.filenames.length) {
+        console.error('No files selected for upload!');
+        // Optionally: display user-friendly message
+        return;
       }
 
-      // Reset the file input value to clear the selection
-      event.target.value = '';
-
-      fetch('http://localhost:5000/upload_jpgs', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          this.setupEventSource();
+      try {
+        const response = await axios.post(path, { filenames: this.filenames });
+        if (response.data.status === 'success') {
+          console.log('Filenames submitted successfully!');
         } else {
-          throw new Error('Failed to upload files');
+          console.error('Error submitting filenames:', response.data.message);
+          // Optionally: display user-friendly error message from server response
         }
-      })
-      .catch(error => {
-        console.error(error);
-        this.uploading = false;
-      });
-    },
-    setupEventSource() {
-      this.eventSource = new EventSource('http://localhost:5000/upload_progress');
-      this.eventSource.onmessage = (event) => {
-        this.progress = parseInt(event.data);
-        if (this.progress === 100) {
-          this.uploading = false;
-          this.eventSource.close();
-        }
-      };
-      this.eventSource.onerror = () => {
-        this.eventSource.close();
-        this.uploading = false;
-      };
+      } catch (error) {
+        console.error('Error submitting filenames:', error);
+        // Handle server errors or other unexpected issues
+      }
     }
   }
-};
+}
 </script>
+<style scoped>
+  .upload-container {
+    display: flex; /* Enable flexbox layout */
+    align-items: center; /* Align elements vertically */
+  }
+
+  .warning-message {
+    margin-left: 0px;
+    /* Optional: add spacing between button and message */
+    white-space: nowrap; /* Prevents line breaks */
+    /* Other styles for the message */
+  }
+</style>
 
 
 
