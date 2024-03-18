@@ -25,39 +25,47 @@ def allowed_marker(filename):
 
 @upload_jpgs_blueprint.route('/upload_jpgs', methods=['GET', 'POST'])
 def upload_jpgs():
-    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        uploaded_files = request.files.getlist('jpg')  # List of uploaded files
+        total_files = len(uploaded_files)
+        uploaded_count = 0
 
-    if request.method == "POST":
-        try:
-            # Get JSON data from request body
-            post_data = request.get_json()
+        response_object = {'status': 'success', 'message': ''}
 
-            # Print filenames to the terminal
-            print("Received filenames:", post_data.get('filenames', []))
-
-            # Validate filenames (assuming multiple filenames are sent)
-            filenames = post_data.get('filenames', [])
-            for filename in filenames:
-                if not allowed_marker(filename):
-                    print('!!! Invalide File!!!')
-                    response_object['status'] = 'error'
-                    response_object['message'] = f'Invalid file extension for "{filename}"'
-                    return jsonify(response_object)
-
-            # Append filenames to the list (assuming FILENAMES is defined globally)
-            FILENAMES.extend(filenames)  # Use extend to add multiple filenames
-
-            # Update response object with success message
-            response_object['message'] = f'{len(filenames)} jpg(s) added!'
-
-        except Exception as e:
+        if not uploaded_files:
             response_object['status'] = 'error'
-            response_object['message'] = str(e)
+            response_object['message'] = 'No files uploaded!'
+            return jsonify(response_object)
 
-    else:  # GET request
-        response_object['files'] = FILENAMES
+        for file in uploaded_files:
+            if file.filename == '':
+                response_object['status'] = 'error'
+                response_object['message'] = 'Empty filename detected!'
+                return jsonify(response_object)
 
-    return jsonify(response_object)
+            if not allowed_marker(file.filename):
+                response_object['status'] = 'error'
+                response_object['message'] = f'Invalid file extension for "{file.filename}"'
+                return jsonify(response_object)
+
+            filename = secure_filename(file.filename)
+            save_path = os.path.join('jpgs', filename)  # Assuming "jpgs" folder is in the same directory
+
+            try:
+                with open(save_path, 'wb') as f:
+                    f.write(file.stream.read())
+                uploaded_count += 1
+            except Exception as e:
+                logging.error(f"Error saving file '{filename}': {e}")
+                continue  # Skip to the next file
+
+        response_object['message'] = f'{uploaded_count} jpg(s) uploaded successfully!'
+        return jsonify(response_object)
+
+    else:
+        print("didnt work man")
+        # Handle GET requests differently if needed (e.g., return list of uploaded files)
+        pass
 
 
 

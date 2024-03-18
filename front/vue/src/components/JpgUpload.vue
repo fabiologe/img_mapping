@@ -4,7 +4,7 @@
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sandstone/bootstrap.min.css" integrity="sha384-zEpdAL7W11eTKeoBJK1g79kgl9qjP7g84KfK3AZsuonx38n8ad+f5ZgXtoSDxPOh" crossorigin="anonymous">
       <div class="col-sm-5">
         <p> Upload jpg's  </p>
-        <input type="file" multiple @change="getFilenames">
+        <input type="file" multiple @change="submitFiles">
         <br><br>
         <button type="button" class="btn btn-success btn-sm" @click="submitFiles">Submit</button>
         <p v-if="showWarning" :errorMessage="errorMessage" @close="showWarning = false" class="warning-message">⚠️ wrong file selected ⚠️</p>
@@ -55,26 +55,40 @@ export default {
       window.location.reload();
     }
   },
-    async submitFiles() {
-      if (!this.filenames.length) {
-        console.error('No files selected for upload!');
-        // Optionally: display user-friendly message
-        return;
+  async submitFiles(event) {
+  if (!event.target.files.length) {
+    console.warn('No files selected for upload!');
+    return;
+  }
+
+  const files = event.target.files;
+
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+        formData.append('jpg', files[i]); // Append all files with the same key 'jpg'
+        console.log(`${files[i].name} uploaded`);
       }
 
-      try {
-        const response = await axios.post(path, { filenames: this.filenames });
-        if (response.data.status === 'success') {
-          console.log('Filenames submitted successfully!');
-        } else {
-          console.error('Error submitting filenames:', response.data.message);
-          // Optionally: display user-friendly error message from server response
-        }
-      } catch (error) {
-        console.error('Error submitting filenames:', error);
-        // Handle server errors or other unexpected issues
+  try {
+    const response = await axios.post(path, formData, {
+      onUploadProgress: (progressEvent) => {
+        const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        console.log(`Trying to upload ${this.filenames} - Upload progress: ${percentage}%`);
+        // Update a progress bar or display a message (see next step)
       }
+    });
+    if (response.data.status === 'success') {
+      console.log('Files uploaded successfully!');
+      // Display a success message to the user (see next step)
+    } else {
+      console.error('Error uploading files:', response.data.message);
+      // Optionally: display user-friendly error message from server response
     }
+  } catch (error) {
+    console.error('Error uploading files:', error);
+    // Handle server errors or other unexpected issues
+  }
+}
   }
 }
 </script>
