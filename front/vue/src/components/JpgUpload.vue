@@ -1,17 +1,14 @@
 <template>
-  <div class="jumbotron vertical-center">
     <div class="container">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sandstone/bootstrap.min.css" integrity="sha384-zEpdAL7W11eTKeoBJK1g79kgl9qjP7g84KfK3AZsuonx38n8ad+f5ZgXtoSDxPOh" crossorigin="anonymous">
       <div class="col-sm-5">
-        <p> Upload jpg's  </p>
+        <p>📷</p>
         <input type="file" multiple @change="submitFiles">
-        <br><br>
         <button type="button" class="btn btn-success btn-sm" @click="submitFiles">Submit</button>
         <p v-if="showWarning" :errorMessage="errorMessage" @close="showWarning = false" class="warning-message">⚠️ wrong file selected ⚠️</p>
         <button type="button" @click="confirmReload" v-if="showWarning">Reload</button>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -94,8 +91,9 @@ export default {
 </script>
 <style scoped>
   .upload-container {
-    display: flex; /* Enable flexbox layout */
-    align-items: center; /* Align elements vertically */
+    display: flex;
+    align-items: center;  /* Align elements vertically */
+    /* Additional styles for spacing, etc. */
   }
 
   .warning-message {
@@ -105,6 +103,5 @@ export default {
     /* Other styles for the message */
   }
 </style>
-
 
 
