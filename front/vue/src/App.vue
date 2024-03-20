@@ -1,33 +1,49 @@
 <script setup>
-//import TiffUpload from './components/TiffUpload.vue'
-import LeafletMap from './components/LeafletMap.vue';
+import TiffUpload from './components/TiffUpload.vue'
 import JpgUpload from './components/JpgUpload.vue'
 </script>
 
 <template>
-  <div id="app" class="app-container">
-    <main>
-      <div class="components-container">
-        <JpgUpload class="jpg-upload" />  <LeafletMap />
+  <div id="app">
+    <header>
+      <div class="wrapper">
+
       </div>
+    </header>
+
+    <main>
+      <TiffUpload />
+      <JpgUpload />
     </main>
   </div>
 </template>
-
 <style scoped>
-  /* ... existing styles */
+header {
+  line-height: 1;
+}
 
-  .components-container {
-    display: grid;
-    grid-template-rows: auto 1fr;  /* Define rows */
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
   }
-  .jpg-upload {
-    width: 100px;  /* Adjust width as needed */
-    height: 50px;  /* Adjust height as needed */
-    position: absolute;  /* Absolute positioning */
-    top: 0;  /* Top position at 0 */
-    left: 0;  /* Left position at 0 */
+
+  .logo {
+    margin: 0 2rem 0 0;
   }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
 </style>
 
 

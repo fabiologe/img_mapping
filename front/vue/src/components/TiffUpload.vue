@@ -1,117 +1,108 @@
 <template>
-  <div>
-    <label for="tiffFileInput" class="file-label">{{ selectedTiffFileName || 'Select GeoTIFF/TIFF ' }}</label>
-    <input id="tiffFileInput" type="file" accept=".tif" @change="handleTiffUpload" class="file-input">
-    <!-- Progress bar -->
-    <div class="progress-container" v-if="selectedFileName">
-      <div class="progress-bar-container">
-        <div class="progress-bar" :style="{ width: uploadProgress + '%', transitionDuration: '5s' }"></div>      </div>
-      <div class="progress-text">{{ uploadProgress }}%</div>
-    </div>
+  <div class="upload-container">
+    <p>🛰️</p>
+    <input type="file" multiple @change="submitFiles">
+    <button type="button" class="btn btn-success btn-sm" @click="submitFiles">Submit</button>
+
+    <template v-if="showWarning">
+    <p class="warning-message">⚠️ Invalid file extension detected! ⚠️</p>
+    <button type="button" @click="confirmReload">Reload</button>
+    </template>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
+import axios from 'axios'
 
-const uploadProgress = ref(0);
-const selectedFileName = ref('');
+const path = 'http://localhost:5000/upload_tiffs'
+const allowedExtensions = ['tif']; // Allowed file extensions (adjust as needed)
 
-const handleTiffUpload = async (event) => {
-  const selectedFile = event.target.files[0];
+export default {
+  data() {
+    return {
+      showWarning: false,
+      errorMessage: '',
+      filenames: [],
+    }
+  },
+  methods: {
+  confirmReload() {
+    if (confirm("Invalid files selected. Reload page to clear selection?")) {
+      window.location.reload();
+    }
+  },
+  async submitFiles(event) {
+  if (!event.target.files.length) {
+    console.warn('No files selected for upload!');
+    return;
+  }
+
+  const files = event.target.files;
+  this.filenames = [];
+
+let hasInvalidFiles = false; // Flag to track invalid files
+for (let i = 0; i < files.length; i++) {
+  const file = files[i];
+  const extension = file.name.split('.').pop().toLowerCase();
+
+  if (!allowedExtensions.includes(extension)) {
+    hasInvalidFiles = true;
+  } else {
+    this.filenames.push(file.name);
+  }
+}
+
+if (hasInvalidFiles) {
+  this.showWarning = true; // Set showWarning only if there are invalid files
+  this.errorMessage = `Invalid file extension detected!`
+  console.log('showWarning:', this.showWarning);
+}
   const formData = new FormData();
-  formData.append('file', selectedFile);
-  // Update selectedFileName to show progress bar
-  selectedFileName.value = selectedFile.name;
-
+  for (let i = 0; i < files.length; i++) {
+        formData.append('tif', files[i]); // Append all files with the same key 'jpg'
+        console.log(`${files[i].name} uploaded`);
+      }
   try {
-    const response = await fetch('http://localhost:5000/upload_tiff', {
-      method: 'POST',
-      body: formData,
-      // Optional: Add headers if needed
+    const response = await axios.post(path, formData, {
+      onUploadProgress: (progressEvent) => {
+        const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        console.log(`Trying to upload ${this.filenames} - Upload progress: ${percentage}%`);
+        // Update a progress bar or display a message (see next step)
+      }
     });
-
-    if (response.ok) {
-      // File upload successful
-      console.log('File uploaded successfully.');
-      // Handle any further actions or UI updates
-
-      // Start the progress animation
-      uploadProgress.value = 0;
-      const interval = setInterval(() => {
-        uploadProgress.value += 10;
-        if (uploadProgress.value >= 100) {
-          clearInterval(interval);
-          // Reset input and progress after animation
-          selectedFileName.value = '';
-          uploadProgress.value = 0;
-        }
-      }, 500);
+    if (response.data.status === 'success') {
+      console.log('Files uploaded successfully!');
+      // Display a success message to the user (see next step)
     } else {
-      // Handle error
-      console.error('File upload failed.');
-      // Display error message or take appropriate action
+      console.error('Error uploading files:', response.data.message);
+      // Optionally: display user-friendly error message from server response
     }
   } catch (error) {
-    console.error('An error occurred while uploading the file:', error);
-    // Display error message or take appropriate action
+    console.error('Error uploading files:', error);
+    // Handle server errors or other unexpected issues
   }
-};
-
+}
+  }
+}
 </script>
-
 <style scoped>
-/* File input styles */
-.file-label {
-  display: block;
-  padding: 10px;
-  border: 2px solid #3498db;
-  border-radius: 5px;
-  font-size: 16px;
-  color: #3498db;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
+  .upload-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+  }
 
-.file-input {
-  display: none; /* Hide the file input */
-}
+  .warning-container {
+    display: flex;
+    flex-direction: column;
+  }
 
-.file-label:hover {
-  border-color: #2980b9;
-}
-
-/* Progress bar styles */
-.progress-container {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.progress-bar-container {
-  position: relative;
-  width: 100%;
-  height: 20px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-}
-
-.progress-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background-color: #3498db;
-  border-radius: 10px;
-  transition: width 5s ease; /* Set the default animation duration to 5 seconds */
-}
-
-.progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 14px;
-  color: #333;
-}
+  .warning-message {
+    font-size: 1rem;
+    color: red;
+    white-space: nowrap; /* Prevent line breaks */
+  }
 </style>
+
 

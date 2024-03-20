@@ -1,14 +1,14 @@
 <template>
-    <div class="container">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sandstone/bootstrap.min.css" integrity="sha384-zEpdAL7W11eTKeoBJK1g79kgl9qjP7g84KfK3AZsuonx38n8ad+f5ZgXtoSDxPOh" crossorigin="anonymous">
-      <div class="col-sm-5">
-        <p>📷</p>
-        <input type="file" multiple @change="submitFiles">
-        <button type="button" class="btn btn-success btn-sm" @click="submitFiles">Submit</button>
-        <p v-if="showWarning" :errorMessage="errorMessage" @close="showWarning = false" class="warning-message">⚠️ wrong file selected ⚠️</p>
-        <button type="button" @click="confirmReload" v-if="showWarning">Reload</button>
-      </div>
-    </div>
+  <div class="upload-container">
+    <p>📷</p>
+    <input type="file" multiple @change="submitFiles">
+    <button type="button" class="btn btn-success btn-sm" @click="submitFiles">Submit</button>
+
+    <template v-if="showWarning">
+    <p class="warning-message">⚠️ Invalid file extension detected! ⚠️</p>
+    <button type="button" @click="confirmReload">Reload</button>
+    </template>
+  </div>
 </template>
 
 <script>
@@ -26,28 +26,7 @@ export default {
     }
   },
   methods: {
-    getFilenames(event) {
-      const files = event.target.files;
-      this.filenames = [];
-
-      let hasInvalidFiles = false; // Flag to track invalid files
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const extension = file.name.split('.').pop().toLowerCase();
-      
-        if (!allowedExtensions.includes(extension)) {
-          hasInvalidFiles = true;
-        } else {
-          this.filenames.push(file.name);
-        }
-      }
-    
-      if (hasInvalidFiles) {
-        this.showWarning = true; // Set showWarning only if there are invalid files
-        this.errorMessage = `Invalid file extension detected!`
-        console.log('showWarning:', this.showWarning);
-      }
-},confirmReload() {
+  confirmReload() {
     if (confirm("Invalid files selected. Reload page to clear selection?")) {
       window.location.reload();
     }
@@ -59,13 +38,30 @@ export default {
   }
 
   const files = event.target.files;
+  this.filenames = [];
 
+let hasInvalidFiles = false; // Flag to track invalid files
+for (let i = 0; i < files.length; i++) {
+  const file = files[i];
+  const extension = file.name.split('.').pop().toLowerCase();
+
+  if (!allowedExtensions.includes(extension)) {
+    hasInvalidFiles = true;
+  } else {
+    this.filenames.push(file.name);
+  }
+}
+
+if (hasInvalidFiles) {
+  this.showWarning = true; // Set showWarning only if there are invalid files
+  this.errorMessage = `Invalid file extension detected!`
+  console.log('showWarning:', this.showWarning);
+}
   const formData = new FormData();
   for (let i = 0; i < files.length; i++) {
         formData.append('jpg', files[i]); // Append all files with the same key 'jpg'
         console.log(`${files[i].name} uploaded`);
       }
-
   try {
     const response = await axios.post(path, formData, {
       onUploadProgress: (progressEvent) => {
@@ -92,15 +88,20 @@ export default {
 <style scoped>
   .upload-container {
     display: flex;
-    align-items: center;  /* Align elements vertically */
-    /* Additional styles for spacing, etc. */
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+  }
+
+  .warning-container {
+    display: flex;
+    flex-direction: column;
   }
 
   .warning-message {
-    margin-left: 0px;
-    /* Optional: add spacing between button and message */
-    white-space: nowrap; /* Prevents line breaks */
-    /* Other styles for the message */
+    font-size: 1rem;
+    color: red;
+    white-space: nowrap; /* Prevent line breaks */
   }
 </style>
 
