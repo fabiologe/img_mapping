@@ -34,7 +34,7 @@ def upload_tiffs():
                 response_object['message'] = 'Empty filename detected!'
                 return jsonify(response_object)
 
-            if not allowed_marker(file.filename):
+            if not allowed_file(file.filename):
                 response_object['status'] = 'error'
                 response_object['message'] = f'Invalid file extension for "{file.filename}"'
                 return jsonify(response_object)

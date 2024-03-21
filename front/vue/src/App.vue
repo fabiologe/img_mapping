@@ -1,6 +1,8 @@
 <script setup>
 import TiffUpload from './components/TiffUpload.vue'
 import JpgUpload from './components/JpgUpload.vue'
+import LeafletMap from './components/LeafletMap.vue'
+import SelectMap from './components/SelectMap.vue'
 </script>
 
 <template>
@@ -12,8 +14,10 @@ import JpgUpload from './components/JpgUpload.vue'
     </header>
 
     <main>
-      <TiffUpload />
-      <JpgUpload />
+      <!--<TiffUpload />
+      <JpgUpload />-->
+      <LeafletMap/>
+      <SelectMap/>
     </main>
   </div>
 </template>
