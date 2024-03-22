@@ -14,8 +14,8 @@ import SelectMap from './components/SelectMap.vue'
     </header>
 
     <main>
-      <!--<TiffUpload />
-      <JpgUpload />-->
+      <!--<TiffUpload />-->
+      <JpgUpload />
       <LeafletMap/>
       <SelectMap/>
     </main>
