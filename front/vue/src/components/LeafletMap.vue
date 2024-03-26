@@ -19,7 +19,6 @@
         <l-popup>
           <p>{{ image.filename }}</p>
           <a href="#" @click="showImage(image.filename)">View Image</a>
-          <img :src="imageData" alt="">
         </l-popup>
       </l-marker>
     </l-map>
