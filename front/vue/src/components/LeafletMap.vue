@@ -19,7 +19,7 @@
         <l-popup>
           <p>{{ image.filename }}</p>
           <a href="#" @click="showImage(image.filename)">View Image</a>
-          <img v-if="imageUrl" :src="imageUrl" alt="Image">
+          <img :src="imageData" alt="">
         </l-popup>
       </l-marker>
     </l-map>
@@ -69,6 +69,7 @@ export default {
       imageUrl: '',
       avgLat: 0, 
       avgLng: 0
+      
     };
   },
   computed: {
@@ -84,20 +85,29 @@ export default {
       console.log(a);
     },
     async showImage(filename) {
-      try {
-        // Send a GET request to the backend to retrieve the image URL
-        const response = await axios.post(`${path}/serve_jpgs`, { filename })
-        
-        // Create a data URL from the received image data
-        const imageUrl = `data:image/jpeg;base64,${response.data}`;
-        
-        // Update imageUrl with the received URL
-        this.imageUrl = imageUrl;
-      } catch (error) {
-        console.error("Error fetching image:", error);
-      }
+  try {
+    // Send a POST request to the backend to retrieve the image data
+    const response = await axios.post(`${path}/serve_jpgs`, { filename }, { responseType: 'blob' });
+
+    // Create a Blob object from the image data
+    const blob = new Blob([response.data], { type: 'image/jpeg' });
+
+    // Create a temporary URL for the Blob
+    const imageUrl = URL.createObjectURL(blob);
+
+    // Open the image URL in a new tab
+    const newWindow = window.open(imageUrl, '_blank');
+    if (!newWindow) {
+      console.error('Failed to open new window. Please check your browser settings.');
+    }
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    // Display an error message to the user
+    alert('Failed to fetch the image. Please try again later.');
+  }
+}
+
     },
-  },
   mounted(){
     const numImages = Object.keys(this.imageData).length;
     let totalLat = 0;
