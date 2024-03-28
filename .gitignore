@@ -12,3 +12,4 @@ back/venv/
 
 # Ignore system-specific files
 .DS_Store
+back/map_tiles/utm/test_1.tif

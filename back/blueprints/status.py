@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 import shutil
 import logging
-from py.check_gps import move_gps_jpgs
+from py.geo_process import move_gps_jpgs, get_boundaries
 
 check_tiffs_blueprint = Blueprint('check_tiffs', __name__)
 check_jpgs_blueprint = Blueprint('check_jpgs', __name__)
@@ -28,6 +28,35 @@ def check_jpgs():
     return jsonify(processed_data)
 
 
-@check_tiffs_blueprint.route('/check_tiffs',methods = ['GET', 'POST'])
+@check_tiffs_blueprint.route('/check_tiffs', methods=['GET', 'POST'])
 def check_tiffs():
-    pass
+    tiff_gk_dir = 'map_tiles/gk'
+    tiff_utm_dir = 'map_tiles/utm'
+    tiff_data = []
+
+    # Check for TIFF files in UTM directory first
+    if os.path.exists(tiff_utm_dir):
+        print("\nTIFF files found in 'utm' directory:")
+        for filename in os.listdir(tiff_utm_dir):
+            if filename.endswith('.tif') or filename.endswith('.tiff'):
+                file_path = os.path.join(tiff_utm_dir, filename)
+                print(file_path)
+                xy_values = get_boundaries(file_path)  # Extract XY values (you need to implement this function)
+                tiff_data.append({'filename': filename, 'xy_values': xy_values})
+
+    # If UTM directory doesn't have TIFF files, check for files in GK directory
+    elif os.path.exists(tiff_gk_dir):
+        print("TIFF files found in 'gk' directory:")
+        for filename in os.listdir(tiff_gk_dir):
+            if filename.endswith('.tif') or filename.endswith('.tiff'):
+                file_path = os.path.join(tiff_gk_dir, filename)
+                print(file_path)
+                xy_values = get_boundaries(file_path)  # Extract XY values (you need to implement this function)
+                tiff_data.append({'filename': filename, 'xy_values': xy_values})
+
+    # Neither 'utm' nor 'gk' directory has TIFF files
+    else:
+        print("No TIFF files found in 'utm' or 'gk' directories.")
+
+    #extract geodata using gdal NEEDS TO BE IMPLEMENTED !!!!
+    return jsonify(tiff_data)
