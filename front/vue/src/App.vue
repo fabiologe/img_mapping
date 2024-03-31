@@ -15,9 +15,9 @@ import UtmMap from './components/UtmMap.vue'
 
     <main>
       <TiffUpload />
-      <!--<JpgUpload />-->
-      <!--<GpsMap/>-->
-      <UtmMap/>
+      <JpgUpload />
+      <GpsMap/>
+      <!--<UtmMap/>-->
     </main>
   </div>
 </template>

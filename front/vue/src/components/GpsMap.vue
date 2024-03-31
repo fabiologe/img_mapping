@@ -20,6 +20,9 @@
           @moveend="log('moveend')">
           <l-popup>
             <p>{{ image.filename }}</p>
+            <p>GPS: {{ image.latitude }}, {{ image.longitude }}</p>
+            <p> UTM-Coordinates: </p>
+            <p>{{ image.easting}}, {{image.northing }}</p>
             <a href="#" @click="showImage(image.filename)">View Image</a>
           </l-popup>
         </l-marker>
@@ -43,6 +46,7 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from 'axios';
+import proj4 from 'proj4';
 
 const path = 'http://localhost:5000/';
 

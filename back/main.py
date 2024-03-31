@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from blueprints.upload import upload_tiffs_blueprint, upload_jpgs_blueprint, FILENAMES
 from blueprints.status import check_jpgs_blueprint, check_tiffs_blueprint
-from blueprints.download import serve_jpgs_blueprint
+from blueprints.download import serve_jpgs_blueprint, serve_tiffUTM_blueprint
 from flask import Flask
 from flask_cors import CORS
 
@@ -16,6 +16,7 @@ CORS(app, resources={
     r"/check_tiffs":{"origins":vue_path},
     r"/check_jpgs":{"origins":vue_path},
     r"/serve_jpgs":{"origins":vue_path},
+    r"/serve_tiffUTM":{"origins":vue_path}
 })
 
 
@@ -31,6 +32,7 @@ app.register_blueprint(upload_jpgs_blueprint)
 app.register_blueprint(check_jpgs_blueprint)
 app.register_blueprint(check_tiffs_blueprint)
 app.register_blueprint(serve_jpgs_blueprint)
+app.register_blueprint(serve_tiffUTM_blueprint)
 
 if __name__ == '__main__':
     app.run(debug=True)

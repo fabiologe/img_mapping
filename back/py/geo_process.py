@@ -2,7 +2,27 @@ import os
 import shutil
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+import pyproj
 
+def add_utm(processed_data):
+    # Define UTM projection
+    utm_proj = pyproj.Proj(proj='utm', zone=32, ellps='WGS84')
+
+    processed_data_utm = []
+    for file_data in processed_data:
+        # Convert GPS coordinates to UTM
+        easting, northing = utm_proj(file_data['longitude'], file_data['latitude'])
+
+        # Append UTM coordinates to file data dictionary
+        file_data['easting'] = easting
+        file_data['northing'] = northing
+
+        # Append modified file data to processed data list
+        processed_data_utm.append(file_data)
+
+    return processed_data_utm
+
+    
 def get_boundaries(file_path):
     print(file_path)
 
@@ -10,8 +30,9 @@ def get_boundaries(file_path):
     ---- Placeholder for GDAL implementation------
     
     '''
-    return xy_value = {'xmin': 373179, 'ymin': 5463515 , 'xmax': 374209 , 'ymax': 5464087}
-    
+    xy_value = {'xmin': 373179, 'ymin': 5463515 , 'xmax': 374209 , 'ymax': 5464087}
+    return xy_value
+
 def extract_gps_info(exif_data, filename):
   """
   Extracts GPS information (latitude, longitude) from Exif metadata.

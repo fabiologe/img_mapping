@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 import shutil
 import logging
-from py.geo_process import move_gps_jpgs, get_boundaries
+from py.geo_process import move_gps_jpgs, get_boundaries, add_utm
 
 check_tiffs_blueprint = Blueprint('check_tiffs', __name__)
 check_jpgs_blueprint = Blueprint('check_jpgs', __name__)
@@ -24,14 +24,15 @@ def check_jpgs():
     """
     jpg_dir = 'jpgs'  
     processed_data = move_gps_jpgs(jpg_dir)
-    print(processed_data)
-    return jsonify(processed_data)
+    processed_data_utm = add_utm(processed_data)
+    print(processed_data_utm)
+    return jsonify(processed_data_utm)
 
 
 @check_tiffs_blueprint.route('/check_tiffs', methods=['GET', 'POST'])
 def check_tiffs():
-    tiff_gk_dir = 'map_tiles/gk'
-    tiff_utm_dir = 'map_tiles/utm'
+    tiff_gk_dir = 'map_tiles/gk/'
+    tiff_utm_dir = 'map_tiles/utm/'
     tiff_data = []
 
     # Check for TIFF files in UTM directory first

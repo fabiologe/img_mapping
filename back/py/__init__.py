@@ -1,7 +1,8 @@
 #from py.creating_map import process_geotiff
 #from py.creating_map import mosaick_geotiffs
-from py.geo_process import move_gps_jpgs, get_boundaries
+from py.geo_process import move_gps_jpgs, get_boundaries, add_utm
 __all__=[
     'move_gps_jpgs',
-    'get_boundaries'
+    'get_boundaries',
+    'add_utm'
 ]
