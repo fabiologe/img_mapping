@@ -16,6 +16,7 @@
     "georaster": "^1.6.0",
     "leaflet": "^1.9.4",
     "leaflet-iiif": "^3.0.0",
+    "package": "^1.0.1",
     "proj4": "^2.11.0",
     "proj4leaflet": "^1.0.2",
     "vue": "^3.4.15"
