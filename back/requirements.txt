@@ -4,5 +4,6 @@ Flask-Cors == 4.0.0
 Werkzeug==3.0.1
 pillow == 10.3.0
 pyproj == 3.6.1
+pymongo == 4.6.3
 #setting up docker for gdal 
 #GDAL==3.4.1

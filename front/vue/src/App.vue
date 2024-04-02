@@ -2,6 +2,7 @@
 import TiffUpload from './components/TiffUpload.vue'
 import JpgUpload from './components/JpgUpload.vue'
 import GpsMap from './components/GpsMap.vue'
+import PermStorage from './components/PermStorage.vue'
 
 </script>
 
@@ -14,9 +15,10 @@ import GpsMap from './components/GpsMap.vue'
     </header>
 
     <main>
-      <TiffUpload />
+      <!--<TiffUpload />
       <JpgUpload />
-      <GpsMap/>
+      <GpsMap/>-->
+      <PermStorage/>
     </main>
   </div>
 </template>

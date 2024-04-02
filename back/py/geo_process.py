@@ -33,6 +33,8 @@ def get_boundaries(file_path):
     xy_value = {'xmin': 373179, 'ymin': 5463515 , 'xmax': 374209 , 'ymax': 5464087}
     return xy_value
 
+
+
 def extract_gps_info(exif_data, filename):
   """
   Extracts GPS information (latitude, longitude) from Exif metadata.
@@ -65,10 +67,6 @@ def extract_gps_info(exif_data, filename):
 
   return gps_info if gps_info else None
 
-
-
-
-    
 
 def move_gps_jpgs(jpg_dir):
     """
