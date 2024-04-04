@@ -2,7 +2,7 @@
   <div>
     <button @click="reloadMap">Reload Map</button>
     <div style="height: 75vh; width: 100vw;">
-      <l-map
+      <l-map :use-global-leaflet="false"
         v-model="zoom"
         v-model:zoom="zoom"
         :center="[avgLat, avgLng]"
@@ -72,14 +72,6 @@ export default {
       avgLat: 0, 
       avgLng: 0
     };
-  },
-  computed: {
-    iconUrl() {
-      return `https://placekitten.com/${this.iconWidth}/${this.iconHeight}`;
-    },
-    iconSize() {
-      return [this.iconWidth, this.iconHeight];
-    },
   },
   methods: {
     log(a) {
