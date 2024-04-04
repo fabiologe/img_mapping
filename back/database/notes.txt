@@ -1,16 +1,16 @@
 Ok docker is kinda cool...
 How to set this shit up for later : 
 
-sudo su 
 
-docker pull mongo 4.0.4
 
-docker run -d -p 27017:27017 --name test-mongo mongo:latest
+sudo docker pull mongo 4.0.4
 
-docker exec -it <CONTAINER_NAME> bash
+sudo docker run -d -p 27017:27017 --name test-mongo mongo:latest
+
+sudo docker exec -it <CONTAINER_NAME> bash
 
 mongosh #opens the docker shell 
-
+# MONGO COMMANDS
 show dbs
 
 use <THE DB YOU WANT>

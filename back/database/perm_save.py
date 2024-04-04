@@ -63,8 +63,11 @@ def save_jpgs_to_mongodb(project_name):
                         file_path = os.path.join(root, file)
                         # Open JPEG file
                         with open(file_path, 'rb') as f:
-                            # Store JPEG file in GridFS
-                            file_id = grid_fs.put(f, filename=file)
+                            # Read the file in chunks
+                            chunk_size = 1024 * 256  # 256 KB chunk size
+                            chunk = f.read(chunk_size)
+                            # Store the file in GridFS in chunks
+                            file_id = grid_fs.put(chunk, filename=file)
                             # Save file ID and path to MongoDB
                             files_collection.update_one(
                                 {'project_name': project_name},
@@ -74,6 +77,7 @@ def save_jpgs_to_mongodb(project_name):
                         print(f"Added {file} to project {project_name}")
     except Exception as e:
         print(f'Error saving JPEGs: {str(e)}')
+
 
 @load_perm_jpgs_blueprint.route('/load_perm_jpgs/<path:project_name>', methods=['GET', 'POST', 'OPTIONS'])
 def load_perm_jpgs(project_name):
