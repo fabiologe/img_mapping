@@ -8,7 +8,7 @@ from blueprints.download import serve_jpgs_blueprint, serve_tiffUTM_blueprint
 from blueprints.delete import delete_jpgs_blueprint
 from flask import Flask
 from flask_cors import CORS
-from database.perm_save import save_project_blueprint
+from database.perm_save import save_project_blueprint, list_projects_blueprint, load_perm_jpgs_blueprint
 from bson import Binary
 
 vue_path = "http://localhost:5173"
@@ -22,6 +22,9 @@ CORS(app, resources={
     r"/serve_tiffUTM":{"origins":vue_path},
     r"/delete_jpgs/*":{"origins":vue_path},
     r"/perm_save":{"origins": vue_path},
+    r"/list_projects":{"origins": vue_path},
+    r"/load_perm_jpgs/*": {"origins": vue_path}
+
 })
 
 
@@ -32,6 +35,8 @@ def index():
     return jsonify(FILENAMES)  # Or any other response
 
 app.register_blueprint(save_project_blueprint)
+app.register_blueprint(list_projects_blueprint)
+app.register_blueprint(load_perm_jpgs_blueprint)
 app.register_blueprint(upload_tiffs_blueprint)
 app.register_blueprint(upload_jpgs_blueprint)
 app.register_blueprint(check_jpgs_blueprint)

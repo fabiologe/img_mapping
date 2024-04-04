@@ -3,7 +3,8 @@ import TiffUpload from './components/TiffUpload.vue'
 import JpgUpload from './components/JpgUpload.vue'
 import GpsMap from './components/GpsMap.vue'
 import PermStorage from './components/PermStorage.vue'
-
+import ListStorage from './components/ListStorage.vue'
+import LoadStorage from './components/LoadStorage.vue'
 </script>
 
 <template>
@@ -15,10 +16,12 @@ import PermStorage from './components/PermStorage.vue'
     </header>
 
     <main>
-      <!--<TiffUpload />
-      <JpgUpload />
-      <GpsMap/>-->
+      <!--<TiffUpload />-->
+      <JpgUpload/>
+      <GpsMap/>
+      <!--<LoadStorage/>
       <PermStorage/>
+      <ListStorage/>-->
     </main>
   </div>
 </template>

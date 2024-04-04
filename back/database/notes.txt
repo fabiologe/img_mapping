@@ -1,0 +1,19 @@
+Ok docker is kinda cool...
+How to set this shit up for later : 
+
+sudo su 
+
+docker pull mongo 4.0.4
+
+docker run -d -p 27017:27017 --name test-mongo mongo:latest
+
+docker exec -it <CONTAINER_NAME> bash
+
+mongosh #opens the docker shell 
+
+show dbs
+
+use <THE DB YOU WANT>
+
+db.<parent>.find() #shows all files stored under <parent>
+
