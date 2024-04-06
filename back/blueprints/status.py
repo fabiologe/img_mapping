@@ -10,6 +10,7 @@ check_tiffs_blueprint = Blueprint('check_tiffs', __name__)
 check_jpgs_blueprint = Blueprint('check_jpgs', __name__)
 
 
+
 @check_jpgs_blueprint.route('/check_jpgs', methods=['GET', 'POST'])
 def check_jpgs():
     """
@@ -61,3 +62,5 @@ def check_tiffs():
 
     #extract geodata using gdal NEEDS TO BE IMPLEMENTED !!!!
     return jsonify(tiff_data)
+
+

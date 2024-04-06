@@ -20,7 +20,7 @@ CORS(app, resources={
     r"/check_jpgs":{"origins":vue_path},
     r"/serve_jpgs":{"origins":vue_path},
     r"/serve_tiffUTM":{"origins":vue_path},
-    r"/delete_jpgs/*":{"origins":vue_path},
+    r"/delete_jpgs":{"origins":vue_path},
     r"/perm_save":{"origins": vue_path},
     r"/list_projects":{"origins": vue_path},
     r"/load_perm_jpgs/*": {"origins": vue_path}

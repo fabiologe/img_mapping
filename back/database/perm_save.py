@@ -4,6 +4,9 @@ from bson import Binary, ObjectId
 from py.data_img import get_date
 from pymongo import MongoClient
 from gridfs import GridFS
+from PIL import Image
+import io
+import piexif
 
 save_project_blueprint = Blueprint('perm_save', __name__)  # Removed slash from blueprint name
 list_projects_blueprint = Blueprint('list_projects', __name__)
@@ -61,13 +64,19 @@ def save_jpgs_to_mongodb(project_name):
                 for file in files:
                     if file.lower().endswith('.jpg'):
                         file_path = os.path.join(root, file)
-                        # Open JPEG file
-                        with open(file_path, 'rb') as f:
-                            # Read the file in chunks
-                            chunk_size = 1024 * 256  # 256 KB chunk size
-                            chunk = f.read(chunk_size)
-                            # Store the file in GridFS in chunks
-                            file_id = grid_fs.put(chunk, filename=file)
+                        # Open JPEG file with PIL
+                        with Image.open(file_path) as img:
+                            # Extract EXIF data
+                            exif_data = img.info.get("exif")
+                            
+                            # Compress the image with JPEG compression
+                            compressed_img = io.BytesIO()
+                            img.save(compressed_img, format='JPEG', quality=70, exif=exif_data)  # Preserve EXIF data
+                            compressed_img.seek(0)
+                            
+                            # Store the compressed image in GridFS
+                            file_id = grid_fs.put(compressed_img, filename=file)
+                            
                             # Save file ID and path to MongoDB
                             files_collection.update_one(
                                 {'project_name': project_name},
@@ -82,7 +91,7 @@ def save_jpgs_to_mongodb(project_name):
 @load_perm_jpgs_blueprint.route('/load_perm_jpgs/<path:project_name>', methods=['GET', 'POST', 'OPTIONS'])
 def load_perm_jpgs(project_name):
     try:    
-            # Query MongoDB to retrieve the project document based on the project name
+        # Query MongoDB to retrieve the project document based on the project name
         project = db.project.find_one({'project_name': project_name})
         if not project:
             return jsonify({'error': 'Project not found'}), 404
@@ -98,15 +107,17 @@ def load_perm_jpgs(project_name):
             if not file_doc:
                 return jsonify({'error': 'File not found'}), 404
             
-            # Get the filename and file data from the file document
+            # Get the filename from the file document
             file_name = file_doc.get('filename')
-            file_data = db.fs.chunks.find_one({'files_id': file_id})
-            if not file_data:
-                return jsonify({'error': 'File data not found'}), 404
-            
+
+            # Retrieve file data from GridFS
+            file_data = b""
+            for chunk in db.fs.chunks.find({'files_id': file_id}).sort('n'):
+                file_data += chunk.get('data')
+
             # Save the file data to the desired folder
             with open(os.path.join(os.getcwd(), 'jpgs', file_name), 'wb') as f:
-                f.write(file_data.get('data'))
+                f.write(file_data)
         
         return jsonify({'message': 'JPEG files loaded successfully'}), 200
     except Exception as e:

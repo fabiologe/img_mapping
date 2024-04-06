@@ -1,20 +1,21 @@
 import os
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
-# Define the blueprint
 delete_jpgs_blueprint = Blueprint('delete_jpgs', __name__)
 
-@delete_jpgs_blueprint.route('/delete_jpgs/<path:directory>', methods=['POST'])
-def delete_jpgs(directory):
+@delete_jpgs_blueprint.route('/delete_jpgs', methods=['POST'])
+def delete_jpgs():
+    directory = request.json.get('directory')
+    print(directory)
     try:
-        # Check if the specified directory exists
-        if os.path.exists(directory):
-            # Remove all files from the specified directory
-            for file_name in os.listdir(directory):
-                file_path = os.path.join(directory, file_name)
-                os.remove(file_path)
-            return jsonify({'message': f'Temporary files in {directory} deleted successfully.'}), 200
-        else:
-            return jsonify({'message': f'Directory {directory} not found.'}), 404
+        # Iterate over all files in the directory
+        for filename in os.listdir(directory):
+            # Check if the file is a JPEG
+            if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg'):
+                # Construct the full file path
+                filepath = os.path.join(directory, filename)
+                # Delete the file
+                os.remove(filepath)
+        return 'JPEG files deleted successfully', 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return str(e), 500

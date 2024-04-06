@@ -5,6 +5,7 @@ import GpsMap from './components/GpsMap.vue'
 import PermStorage  from './components/PermStorage.vue';
 import LoadStorage from './components/LoadStorage.vue';
 import ListStorage  from './components/ListStorage.vue';
+import DeleteJpgs from './components/DeleteJpgs.vue'
 </script>
 
 <template>
@@ -22,6 +23,7 @@ import ListStorage  from './components/ListStorage.vue';
       <ListStorage/>
       <PermStorage/>
       <LoadStorage/>
+      <DeleteJpgs/>
     </main>
   </div>
 </template>
