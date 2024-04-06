@@ -1,5 +1,4 @@
 <script setup>
-import TiffUpload from './components/TiffUpload.vue'
 import JpgUpload from './components/JpgUpload.vue'
 import GpsMap from './components/GpsMap.vue'
 import PermStorage  from './components/PermStorage.vue';
@@ -17,7 +16,6 @@ import DeleteJpgs from './components/DeleteJpgs.vue'
     </header>
 
     <main>
-      <TiffUpload />
       <JpgUpload />
       <GpsMap/>
       <ListStorage/>
