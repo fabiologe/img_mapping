@@ -2,12 +2,12 @@
   <div>
     <button @click="reloadMap">Reload Map</button>
     <div style="height: 75vh; width: 100vw;">
-      <l-map
+      <l-map :use-global-leaflet="false"
         v-model="zoom"
         v-model:zoom="zoom"
         :center="[avgLat, avgLng]"
         @move="log('move')"
-      >
+       >
         <l-tile-layer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></l-tile-layer>

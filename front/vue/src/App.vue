@@ -19,9 +19,9 @@ import LoadStorage from './components/LoadStorage.vue'
       <!--<TiffUpload />-->
       <JpgUpload/>
       <GpsMap/>
-      <!--<LoadStorage/>
+      <LoadStorage/>
       <PermStorage/>
-      <ListStorage/>-->
+      <ListStorage/>
     </main>
   </div>
 </template>
