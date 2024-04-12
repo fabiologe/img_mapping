@@ -18,16 +18,11 @@ import DeleteJpgs from './components/DeleteJpgs.vue'
     <main>
       <JpgUpload />
       <GpsMap/>
-<<<<<<< HEAD
-      <ListStorage/>
-      <PermStorage/>
-      <LoadStorage/>
       <DeleteJpgs/>
-=======
       <LoadStorage/>
       <PermStorage/>
       <ListStorage/>
->>>>>>> 8b9bea2f081cd4630e2333cc2cd716321d79abba
+
     </main>
   </div>
 </template>

@@ -23,7 +23,13 @@ def check_jpgs():
                 - in_gps_folder (optional): Boolean indicating if in GPS directory (if returned by move_gps_jpgs)
                 - error (optional): Error message for any processing errors (if returned by move_gps_jpgs)
     """
-    jpg_dir = 'jpgs'  
+    
+    jpg_dir = 'jpgs'
+    gps_dir = os.path.join(jpg_dir, 'gps')
+    if os.listdir(gps_dir):
+        for file_name in os.listdir(gps_dir):
+            file_path = os.path.join(gps_dir, file_name)
+            os.remove(file_path)
     processed_data = move_gps_jpgs(jpg_dir)
     processed_data_utm = add_utm(processed_data)
     print(processed_data_utm)
